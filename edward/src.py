@@ -61,6 +61,26 @@ def main():
         exit()
     print("Number of comparisons:", comparisons)
 
+    integers = []
+    with open('test-files/pi.txt', 'r') as file:
+        elementCounter = 0
+        currentNumber = ""
+        while True:
+            char = file.read(1)
+            if not char:
+                break
+            if char.isdigit():
+                currentNumber += char
+                elementCounter += 1
+                if elementCounter == 10:
+                    integers.append(int(currentNumber))
+                    currentNumber = ""
+                    elementCounter = 0
+
+    print("Median of Pi.txt")
+    reslt = quickselect(integers, len(integers)/2)
+    print("result: ", reslt)
+
 if __name__ == "__main__":
     main()
 
