@@ -1,0 +1,75 @@
+import random
+
+
+def read_file_to_list(file_path):
+    with open(file_path, 'r') as file:
+        arr = [int(line.strip()) for line in file.readlines()]
+    return arr
+
+
+def partition(arr, low, high, pivot_idx):
+    pivot = arr[pivot_idx]
+    arr[pivot_idx], arr[high] = arr[high], arr[pivot_idx]  # Move pivot to the end
+    store_idx = low
+    for i in range(low, high):
+        if arr[i] < pivot:
+            arr[store_idx], arr[i] = arr[i], arr[store_idx]
+            store_idx += 1
+    arr[store_idx], arr[high] = arr[high], arr[store_idx]  # Move pivot to its final place
+    return store_idx
+
+
+def randomized_select(arr, low, high, k):
+    if low == high:
+        return arr[low]
+    pivot_idx = random.randint(low, high)
+    pivot_idx = partition(arr, low, high, pivot_idx)
+    if k == pivot_idx:
+        return arr[k]
+    elif k < pivot_idx:
+        return randomized_select(arr, low, pivot_idx - 1, k)
+    else:
+        return randomized_select(arr, pivot_idx + 1, high, k)
+
+
+def median_of_medians(arr, low, high):
+    if high - low + 1 <= 5:
+        return sorted(arr[low:high+1])[len(arr[low:high+1]) // 2]
+    
+    # Divide array into groups of 5 and sort them, then use medians
+    medians = []
+    for i in range(low, high + 1, 5):
+        sub_right = min(i + 4, high)
+        median = sorted(arr[i:sub_right + 1])[len(arr[i:sub_right + 1]) // 2]
+        medians.append(median)
+    
+    return median_of_medians(medians, 0, len(medians) - 1)
+
+
+def deterministic_select(arr, low, high, k):
+    if low == high:
+        return arr[low]
+    pivot_idx = partition(arr, low, high, arr.index(median_of_medians(arr, low, high)))
+    if k == pivot_idx:
+        return arr[k]
+    elif k < pivot_idx:
+        return deterministic_select(arr, low, pivot_idx - 1, k)
+    else:
+        return deterministic_select(arr, pivot_idx + 1, high, k)
+
+
+
+
+file_path = "test_two.txt" 
+arr = read_file_to_list(file_path)
+k = 4  # For finding the 5th smallest element (0-based index)
+
+
+# Randomized Select
+result_randomized = randomized_select(arr.copy(), 0, len(arr) - 1, k)
+print("Randomized Selection:", result_randomized)
+
+
+# Deterministic Select (Median of Medians)
+result_deterministic = deterministic_select(arr.copy(), 0, len(arr) - 1, k)
+print("Deterministic Selection:", result_deterministic)

@@ -1,0 +1,84 @@
+#Sam Collins Quicksort
+#09/30/24
+#Runs with file test_one.txt
+
+
+
+
+def read_file_to_list(file_path):
+    with open(file_path, 'r') as file:
+        arr = [int(line.strip()) for line in file.readlines()]
+    return arr
+
+
+def partition(arr, low, high):
+    pivot = arr[low]
+    i = low + 1
+    for j in range(low + 1, high + 1):
+        if arr[j] < pivot:
+            arr[i], arr[j] = arr[j], arr[i]
+            i += 1
+    arr[low], arr[i - 1] = arr[i - 1], arr[low]
+    return i - 1
+
+
+def quicksort_first_pivot(arr, low, high):
+    if low >= high:
+        return 0
+    comparisons = high - low
+    pivot_idx = partition(arr, low, high)
+    comparisons += quicksort_first_pivot(arr, low, pivot_idx - 1)
+    comparisons += quicksort_first_pivot(arr, pivot_idx + 1, high)
+    return comparisons
+
+
+def quicksort_last_pivot(arr, low, high):
+    if low >= high:
+        return 0
+    arr[low], arr[high] = arr[high], arr[low]  # Swap first and last elements
+    comparisons = high - low
+    pivot_idx = partition(arr, low, high)
+    comparisons += quicksort_last_pivot(arr, low, pivot_idx - 1)
+    comparisons += quicksort_last_pivot(arr, pivot_idx + 1, high)
+    return comparisons
+
+
+def median_of_three(arr, low, high):
+    mid = (low + high) // 2
+    if arr[low] > arr[mid]:
+        arr[low], arr[mid] = arr[mid], arr[low]
+    if arr[low] > arr[high]:
+        arr[low], arr[high] = arr[high], arr[low]
+    if arr[mid] > arr[high]:
+        arr[mid], arr[high] = arr[high], arr[mid]
+    arr[low], arr[mid] = arr[mid], arr[low]  # Put median at the beginning
+    return partition(arr, low, high)
+
+
+def quicksort_median_of_three(arr, low, high):
+    if low >= high:
+        return 0
+    comparisons = high - low
+    pivot_idx = median_of_three(arr, low, high)
+    comparisons += quicksort_median_of_three(arr, low, pivot_idx - 1)
+    comparisons += quicksort_median_of_three(arr, pivot_idx + 1, high)
+    return comparisons
+
+
+file_path = "test_one.txt"
+arr = read_file_to_list(file_path)
+
+
+# QuickSort with first element as pivot
+comparisons_first = quicksort_first_pivot(arr.copy(), 0, len(arr) - 1)
+print("Comparisons using first element as pivot:", comparisons_first)
+
+
+# QuickSort with last element as pivot
+comparisons_last = quicksort_last_pivot(arr.copy(), 0, len(arr) - 1)
+print("Comparisons using last element as pivot:", comparisons_last)
+
+
+# QuickSort with median of three as pivot
+comparisons_median = quicksort_median_of_three(arr.copy(), 0, len(arr) - 1)
+print("Comparisons using median of three as pivot:", comparisons_median)
