@@ -169,8 +169,6 @@ def dselect(arr, i, return_median=False):
     for j in range(0, len(arr), 5):
         group = arr[j:j + 5]
         medians.append(sorted(group)[len(group) // 2])  # Find the median of each group
-
-    # Step 2: Find the median of medians
     if len(medians) <= 5:
         pivot = sorted(medians)[len(medians) // 2]
     else:
@@ -179,15 +177,15 @@ def dselect(arr, i, return_median=False):
     if return_median:
         return pivot
 
-    # Step 3: Partition array around pivot
+    # Partition
     low = [x for x in arr if x < pivot]
     high = [x for x in arr if x > pivot]
-    pivot_count = len(arr) - len(low) - len(high)  # Count occurrences of the pivot itself
+    pivot_count = len(arr) - len(low) - len(high)
 
-    # Step 4: Determine which part of the array to search
-    if i <= len(low):  # The i-th smallest is in the "low" part
+    # Get subarray to search
+    if i <= len(low):
         return dselect(low, i)
-    elif i > len(low) + pivot_count:  # The i-th smallest is in the "high" part
+    elif i > len(low) + pivot_count:
         return dselect(high, i - len(low) - pivot_count)
-    else:  # The pivot is the i-th smallest element
-        return pivot
+    else:
+        return pivot # we found the pivot
